@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Candidate Verification | Intervia</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f4fbff, #eaf8fc);
+            color: #263b4d;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .circle {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0.35;
+            z-index: 0;
+        }
+
+        .circle.one {
+            width: 260px;
+            height: 260px;
+            background: #c9edf5;
+            top: -90px;
+            left: -80px;
+        }
+
+        .circle.two {
+            width: 320px;
+            height: 320px;
+            background: #d8f2f8;
+            bottom: -130px;
+            right: -100px;
+        }
+
+        header {
+            width: 100%;
+            padding: 24px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 700;
+            color: #276b86;
+            letter-spacing: 0.3px;
+        }
+
+        .step {
+            font-size: 14px;
+            color: #668394;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 9px 16px;
+            border-radius: 20px;
+            border: 1px solid #d9edf2;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 35px 20px 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 850px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid #dceff4;
+            border-radius: 28px;
+            padding: 48px 55px;
+            box-shadow: 0 15px 40px rgba(69, 133, 155, 0.10);
+            animation: appear 0.7s ease;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .icon-box {
+            width: 68px;
+            height: 68px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #d9f3f8, #c7eaf2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 31px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #23475b;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: #6c8391;
+            font-size: 16px;
+            line-height: 1.7;
+            max-width: 650px;
+            margin-bottom: 35px;
+        }
+
+        .info-box {
+            background: #f3fbfd;
+            border: 1px solid #d9edf2;
+            border-radius: 16px;
+            padding: 17px 20px;
+            margin-bottom: 30px;
+            color: #587180;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #376d82;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #3c5969;
+            margin-bottom: 9px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 17px;
+            border: 1px solid #cfe4eb;
+            border-radius: 12px;
+            outline: none;
+            font-size: 15px;
+            color: #304b5b;
+            background: #ffffff;
+            transition: 0.25s ease;
+        }
+
+        input::placeholder {
+            color: #9aadb7;
+        }
+
+        input:focus {
+            border-color: #83c6d8;
+            box-shadow: 0 0 0 4px rgba(131, 198, 216, 0.13);
+        }
+
+        .button-area {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 32px;
+        }
+
+        .verify-button {
+            border: none;
+            padding: 14px 27px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #78cfe3, #63b7d1);
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.25s ease;
+            box-shadow: 0 7px 18px rgba(83, 161, 185, 0.18);
+        }
+
+        .verify-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(83, 161, 185, 0.24);
+        }
+
+        /* Error message */
+
+        .error-box {
+            background: #fff3f3;
+            border: 1px solid #f0caca;
+            color: #a34d4d;
+            border-radius: 12px;
+            padding: 13px 16px;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        /* Verified candidate */
+
+        .verified-box {
+            background: #f1fbf5;
+            border: 1px solid #c9e8d3;
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .verified-title {
+            color: #367b4d;
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 17px;
+        }
+
+        .candidate-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+            border-bottom: 1px solid #dcefe1;
+        }
+
+        .candidate-detail:last-child {
+            border-bottom: none;
+        }
+
+        .candidate-detail span:first-child {
+            color: #668071;
+        }
+
+        .candidate-detail span:last-child {
+            color: #315d40;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #8197a3;
+            font-size: 13px;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 650px) {
+
+            header {
+                padding: 20px 5%;
+            }
+
+            .step {
+                display: none;
+            }
+
+            .card {
+                padding: 35px 25px;
+                border-radius: 22px;
+            }
+
+            h1 {
+                font-size: 27px;
+            }
+
+            .button-area {
+                justify-content: stretch;
+            }
+
+            .verify-button {
+                width: 100%;
+            }
+
+            .candidate-detail {
+                flex-direction: column;
+                gap: 3px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="circle one"></div>
+    <div class="circle two"></div>
+
+    <header>
+
+        <div class="logo">
+            Intervia
+        </div>
+
+        <div class="step">
+            Candidate Verification
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <div class="card">
+
+            <div class="icon-box">
+                🎫
+            </div>
+
+            <h1>Verify Your Interview</h1>
+
+            <p class="subtitle">
+                Enter your unique Candidate ID to securely access
+                your interview details, rounds, schedule and reporting
+                instructions.
+            </p>
+
+
+            <div class="info-box">
+                <strong>Where can I find my Candidate ID?</strong><br>
+                Your Candidate ID is provided by the organization in
+                your interview invitation or confirmation message.
+            </div>
+
+
+            <!-- ERROR MESSAGE -->
+
+            {% if error %}
+
+            <div class="error-box">
+                ⚠️ {{ error }}
+            </div>
+
+            {% endif %}
+
+
+            <!-- VERIFIED CANDIDATE -->
+
+            {% if candidate %}
+
+            <div class="verified-box">
+
+                <div class="verified-title">
+                    ✓ Candidate Verified Successfully
+                </div>
+
+                <div class="candidate-detail">
+                    <span>Candidate ID</span>
+                    <span>{{ candidate.id }}</span>
+                </div>
+
+                <div class="candidate-detail">
+                    <span>Name</span>
+                    <span>{{ candidate.name }}</span>
+                </div>
+
+                <div class="candidate-detail">
+                    <span>Email</span>
+                    <span>{{ candidate.email }}</span>
+                </div>
+
+                <div class="candidate-detail">
+                    <span>Status</span>
+                    <span>{{ candidate.status }}</span>
+                </div>
+
+            </div>
+
+
+            <form action="/process" method="GET">
+
+                <input
+                    type="hidden"
+                    name="candidate_id"
+                    value="{{ candidate.id }}"
+                >
+
+                <div class="button-area">
+
+                    <button
+                        type="submit"
+                        class="verify-button">
+                        Continue to Interview Details →
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            {% else %}
+
+
+            <!-- VERIFICATION FORM -->
+
+            <form action="/candidate" method="POST">
+
+                <div class="form-group">
+
+                    <label for="candidate_id">
+                        Candidate ID
+                    </label>
+
+                    <input
+                        type="text"
+                        id="candidate_id"
+                        name="candidate_id"
+                        placeholder="Example: INT-1024"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="button-area">
+
+                    <button
+                        type="submit"
+                        class="verify-button">
+                        Verify Candidate →
+                    </button>
+
+                </div>
+
+            </form>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+
+    <footer>
+        InterviewFlow · Simple. Organized. Professional.
+    </footer>
+
+</body>
+
+</html>
+
+

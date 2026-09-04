@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Candidate Instructions | InterviewFlow
+    </title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f7f4ff,
+                    #eef5ff
+                );
+
+            color: #292d42;
+
+            padding: 35px 20px 50px;
+        }
+
+
+        /* =================================================
+           BACKGROUND
+        ================================================= */
+
+        .circle {
+
+            position: fixed;
+
+            border-radius: 50%;
+
+            filter: blur(3px);
+
+            opacity: 0.35;
+
+            z-index: 0;
+        }
+
+
+        .circle.one {
+
+            width: 280px;
+
+            height: 280px;
+
+            background: #ddd6ff;
+
+            top: -100px;
+
+            left: -90px;
+        }
+
+
+        .circle.two {
+
+            width: 350px;
+
+            height: 350px;
+
+            background: #d9e8ff;
+
+            right: -130px;
+
+            bottom: -130px;
+        }
+
+
+        /* =================================================
+           PAGE
+        ================================================= */
+
+        .page {
+
+            position: relative;
+
+            z-index: 1;
+
+            max-width: 900px;
+
+            margin: auto;
+        }
+
+
+        /* =================================================
+           HEADER
+        ================================================= */
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 28px;
+        }
+
+
+        .brand {
+
+            color: #5967b3;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            letter-spacing: 2px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 10px;
+        }
+
+
+        h1 {
+
+            font-size: 38px;
+
+            color: #292d42;
+
+            margin-bottom: 9px;
+        }
+
+
+        .subtitle {
+
+            color: #777d92;
+
+            font-size: 15px;
+        }
+
+
+        /* =================================================
+           CONFIRMATION CARD
+        ================================================= */
+
+        .confirmation {
+
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 12px 35px
+                rgba(50, 60, 100, 0.08);
+
+            margin-bottom: 20px;
+
+            text-align: center;
+        }
+
+
+        .check {
+
+            width: 58px;
+
+            height: 58px;
+
+            border-radius: 50%;
+
+            background: #e7f7eb;
+
+            color: #2e8b57;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 28px;
+
+            margin: 0 auto 15px;
+        }
+
+
+        .confirmation h2 {
+
+            font-size: 22px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .confirmation p {
+
+            color: #777d92;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+
+        .candidate-id {
+
+            display: inline-block;
+
+            margin-top: 15px;
+
+            padding: 8px 15px;
+
+            background: #eef0ff;
+
+            color: #5967b3;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        /* =================================================
+           INFO GRID
+        ================================================= */
+
+        .info-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .info-card {
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 23px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(50, 60, 100, 0.07);
+        }
+
+
+        .info-card h3 {
+
+            color: #5967b3;
+
+            font-size: 16px;
+
+            margin-bottom: 13px;
+        }
+
+
+        .info-card p {
+
+            color: #70758a;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+        }
+
+
+        .info-card ul {
+
+            padding-left: 20px;
+
+            color: #70758a;
+
+            font-size: 13px;
+
+            line-height: 1.9;
+        }
+
+
+        /* =================================================
+           REPORTING CARD
+        ================================================= */
+
+        .reporting-card {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5967b3,
+                    #707dc7
+                );
+
+            color: white;
+
+            border-radius: 20px;
+
+            padding: 25px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 12px 30px
+                rgba(70, 80, 150, 0.15);
+        }
+
+
+        .reporting-card h2 {
+
+            font-size: 20px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .reporting-main {
+
+            font-size: 28px;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+        }
+
+
+        .reporting-date {
+
+            font-size: 13px;
+
+            opacity: 0.9;
+
+            margin-bottom: 13px;
+        }
+
+
+        .reporting-details {
+
+            border-top:
+                1px solid
+                rgba(255,255,255,0.25);
+
+            padding-top: 13px;
+
+            font-size: 13px;
+
+            line-height: 1.8;
+        }
+
+
+        /* =================================================
+           ROOM
+        ================================================= */
+
+        .room-box {
+
+            margin-top: 15px;
+
+            padding: 12px 14px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(255,255,255,0.13);
+
+            font-weight: 600;
+        }
+
+
+        /* =================================================
+           IMPORTANT TIPS
+        ================================================= */
+
+        .tips {
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 23px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(50, 60, 100, 0.07);
+
+            margin-bottom: 25px;
+        }
+
+
+        .tips h2 {
+
+            font-size: 18px;
+
+            margin-bottom: 15px;
+
+            color: #30354d;
+        }
+
+
+        .tip {
+
+            display: flex;
+
+            gap: 12px;
+
+            padding: 11px 0;
+
+            border-bottom:
+                1px solid #eef0f5;
+
+            color: #70758a;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        .tip:last-child {
+
+            border-bottom: none;
+        }
+
+
+        .tip-icon {
+
+            flex-shrink: 0;
+
+            width: 27px;
+
+            height: 27px;
+
+            border-radius: 50%;
+
+            background: #eef0ff;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 13px;
+        }
+
+
+        /* =================================================
+           BUTTONS
+        ================================================= */
+
+        .buttons {
+
+            text-align: center;
+
+            margin-top: 20px;
+        }
+
+
+        .home-button {
+
+            display: inline-block;
+
+            padding: 13px 25px;
+
+            background: #5967b3;
+
+            color: white;
+
+            border-radius: 10px;
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .home-button:hover {
+
+            background: #4d599f;
+        }
+
+
+        .back {
+
+            display: block;
+
+            margin-top: 14px;
+
+            color: #5967b3;
+
+            text-decoration: none;
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+
+        .back:hover {
+
+            text-decoration: underline;
+        }
+
+
+        /* =================================================
+           NO SCHEDULE
+        ================================================= */
+
+        .no-schedule {
+
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 50px 25px;
+
+            text-align: center;
+
+            box-shadow:
+                0 10px 30px
+                rgba(50, 60, 100, 0.07);
+        }
+
+
+        .no-schedule h2 {
+
+            margin-bottom: 10px;
+
+            color: #30354d;
+        }
+
+
+        .no-schedule p {
+
+            color: #777d92;
+
+            font-size: 13px;
+        }
+
+
+        /* =================================================
+           RESPONSIVE
+        ================================================= */
+
+        @media (max-width: 700px) {
+
+            .info-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            h1 {
+
+                font-size: 30px;
+            }
+
+
+            body {
+
+                padding:
+                    25px 12px 40px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="circle one"></div>
+
+<div class="circle two"></div>
+
+
+<main class="page">
+
+
+    <!-- =================================================
+         HEADER
+    ================================================= -->
+
+    <header class="header">
+
+        <div class="brand">
+            Intervia
+        </div>
+
+        <h1>
+            Candidate Instructions
+        </h1>
+
+        <p class="subtitle">
+            You're all set! Please review the details
+            before arriving for your interview.
+        </p>
+
+    </header>
+
+
+    {% if schedule %}
+
+
+    <!-- =================================================
+         CONFIRMATION
+    ================================================= -->
+
+    <section class="confirmation">
+
+        <div class="check">
+            ✓
+        </div>
+
+        <h2>
+            Interview Confirmed
+        </h2>
+
+        <p>
+            Your interview schedule has been successfully
+            arranged by the organization.
+        </p>
+
+
+        <div class="candidate-id">
+
+            Candidate ID:
+            {{ candidate.id }}
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         REPORTING INFORMATION
+    ================================================= -->
+
+    <section class="reporting-card">
+
+        <h2>
+            🕐 Reporting Information
+        </h2>
+
+
+        <div class="reporting-main">
+
+            {{ schedule.reporting_time }}
+
+        </div>
+
+
+        <div class="reporting-date">
+
+            {{ schedule.weekday }},
+            {{ schedule.reporting_date }}
+
+        </div>
+
+
+        <div class="reporting-details">
+
+            <strong>
+                Round 1 starts:
+            </strong>
+
+            {{ schedule.starting_time }}
+
+            <br>
+
+
+            <strong>
+                Interview ends:
+            </strong>
+
+            {{ schedule.session_end }}
+
+            <br>
+
+
+            <strong>
+                Candidate:
+            </strong>
+
+            {{ candidate.name }}
+
+
+            <div class="room-box">
+
+                🏢 Interview Room:
+                {{ schedule.room }}
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         IMPORTANT INFORMATION
+    ================================================= -->
+
+    <div class="info-grid">
+
+
+        <!-- Documents -->
+
+        <section class="info-card">
+
+            <h3>
+                📄 Documents to Carry
+            </h3>
+
+            <ul>
+
+                <li>
+                    Updated Resume / CV
+                </li>
+
+                <li>
+                    Valid Photo ID
+                </li>
+
+                <li>
+                    Educational certificates
+                    if requested
+                </li>
+
+                <li>
+                    Any other documents
+                    mentioned by the company
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- Arrival -->
+
+        <section class="info-card">
+
+            <h3>
+                📍 Arrival Instructions
+            </h3>
+
+            <p>
+
+                Please arrive at least
+                <strong>30 minutes before</strong>
+                your Round 1 starting time.
+
+                <br><br>
+
+                Report to the designated reception
+                or interview area and keep your
+                Candidate ID ready.
+
+            </p>
+
+        </section>
+
+
+    </div>
+
+
+    <!-- =================================================
+         IMPORTANT TIPS
+    ================================================= -->
+
+    <section class="tips">
+
+        <h2>
+            Important Tips
+        </h2>
+
+
+        <div class="tip">
+
+            <div class="tip-icon">
+                ⏰
+            </div>
+
+            <div>
+                Arrive on time. Reporting time is
+                <strong>
+                    {{ schedule.reporting_time }}
+                </strong>.
+            </div>
+
+        </div>
+
+
+        <div class="tip">
+
+            <div class="tip-icon">
+                📱
+            </div>
+
+            <div>
+                Keep your phone charged and
+                accessible in case the organization
+                needs to contact you.
+            </div>
+
+        </div>
+
+
+        <div class="tip">
+
+            <div class="tip-icon">
+                📄
+            </div>
+
+            <div>
+                Carry all required documents and
+                a copy of your updated resume.
+            </div>
+
+        </div>
+
+
+        <div class="tip">
+
+            <div class="tip-icon">
+                🧘
+            </div>
+
+            <div>
+                Stay calm and be prepared for all
+                four interview rounds.
+            </div>
+
+        </div>
+
+
+        <div class="tip">
+
+            <div class="tip-icon">
+                🏢
+            </div>
+
+            <div>
+                Your assigned interview room is
+                <strong>
+                    {{ schedule.room }}
+                </strong>.
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    {% else %}
+
+
+    <!-- =================================================
+         NO SCHEDULE
+    ================================================= -->
+
+    <section class="no-schedule">
+
+        <h2>
+            Schedule Not Available Yet
+        </h2>
+
+        <p>
+            Your candidate ID has been verified,
+            but the administrator has not generated
+            your interview schedule yet.
+        </p>
+
+    </section>
+
+
+    {% endif %}
+
+
+    <!-- =================================================
+         NAVIGATION
+    ================================================= -->
+
+    <div class="buttons">
+
+
+        <a
+            href="{{ url_for('home') }}"
+            class="home-button"
+        >
+            Return to Home
+        </a>
+
+
+        <a
+            href="{{ url_for('schedule', candidate_id=candidate.id) }}"
+            class="back"
+        >
+            ← Back to Interview Schedule
+        </a>
+
+
+    </div>
+
+
+</main>
+
+
+</body>
+
+</html>

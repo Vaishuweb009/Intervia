@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+<title>Interview Process | InterviewFlow</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7ff, #eaf0ff);
+        color: #20243a;
+        padding: 35px 20px;
+    }
+
+    .circle {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(2px);
+        opacity: 0.35;
+        z-index: 0;
+    }
+
+    .circle.one {
+        width: 270px;
+        height: 270px;
+        background: #d6ddff;
+        top: -100px;
+        left: -90px;
+    }
+
+    .circle.two {
+        width: 330px;
+        height: 330px;
+        background: #e5ddff;
+        right: -120px;
+        bottom: -120px;
+    }
+
+    .page {
+        position: relative;
+        z-index: 1;
+        max-width: 950px;
+        margin: auto;
+    }
+
+    /* Header */
+
+    .header {
+        text-align: center;
+        margin-bottom: 35px;
+        animation: appear 0.7s ease;
+    }
+
+    .brand {
+        display: inline-block;
+        color: #5967b3;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+
+    h1 {
+        font-size: 38px;
+        color: #20243a;
+        margin-bottom: 12px;
+    }
+
+    .subtitle {
+        max-width: 650px;
+        margin: auto;
+        color: #70758a;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    /* Candidate banner */
+
+    .candidate-banner {
+        background: white;
+        border-radius: 18px;
+        padding: 18px 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(50, 60, 100, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        animation: appear 0.8s ease;
+    }
+
+    .candidate-info small {
+        display: block;
+        color: #858a9d;
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+
+    .candidate-info strong {
+        color: #30354d;
+        font-size: 16px;
+    }
+
+    .selected {
+        background: #eef8f1;
+        color: #43875a;
+        padding: 8px 13px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* Rounds */
+
+    .rounds {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+
+    .round-card {
+        background: rgba(255, 255, 255, 0.94);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 12px 30px rgba(50, 60, 100, 0.08);
+        position: relative;
+        overflow: hidden;
+        transition: 0.25s ease;
+        animation: appear 0.8s ease;
+    }
+
+    .round-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 35px rgba(50, 60, 100, 0.12);
+    }
+
+    .round-number {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 55px;
+        height: 55px;
+        background: #eef0ff;
+        border-radius: 0 0 0 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #5967b3;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .round-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: #f1f3ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 18px;
+    }
+
+    .round-card h2 {
+        color: #30354d;
+        font-size: 20px;
+        margin-bottom: 9px;
+    }
+
+    .round-card p {
+        color: #777c8f;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .duration {
+        display: inline-block;
+        margin-top: 17px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: #f7f8ff;
+        color: #5967b3;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    /* Information box */
+
+    .notice {
+        margin-top: 25px;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 22px 25px;
+        box-shadow: 0 10px 30px rgba(50, 60, 100, 0.07);
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .notice-icon {
+        font-size: 23px;
+    }
+
+    .notice h3 {
+        font-size: 15px;
+        color: #353a54;
+        margin-bottom: 5px;
+    }
+
+    .notice p {
+        font-size: 13px;
+        line-height: 1.6;
+        color: #777c8f;
+    }
+
+    /* Button */
+
+    .button-area {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .continue-button {
+        display: inline-block;
+        text-decoration: none;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 11px;
+        background: #5967b3;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s ease;
+        box-shadow: 0 8px 20px rgba(89, 103, 179, 0.23);
+    }
+
+    .continue-button:hover {
+        background: #4c5aa5;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(89, 103, 179, 0.3);
+    }
+
+    .back {
+        display: block;
+        margin-top: 18px;
+        text-decoration: none;
+        color: #5967b3;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .back:hover {
+        text-decoration: underline;
+    }
+
+    /* Animation */
+
+    @keyframes appear {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+
+    @media (max-width: 700px) {
+
+        .rounds {
+            grid-template-columns: 1fr;
+        }
+
+        h1 {
+            font-size: 31px;
+        }
+
+        .candidate-banner {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+    }
+
+    @media (max-width: 450px) {
+
+        body {
+            padding: 25px 15px;
+        }
+
+        h1 {
+            font-size: 27px;
+        }
+
+        .round-card {
+            padding: 21px;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="circle one"></div>
+<div class="circle two"></div>
+<main class="page">
+
+    <!-- Header -->
+
+    <header class="header">
+
+        <div class="brand">
+            Intervia
+        </div>
+
+        <h1>Your Interview Journey</h1>
+
+        <p class="subtitle">
+            Congratulations on being shortlisted. Your interview
+            process consists of the following rounds. Please review
+            the process before checking your allocated schedule.
+        </p>
+
+    </header>
+
+    <!-- Candidate Information -->
+
+    <div class="candidate-banner">
+
+        <div class="candidate-info">
+
+            <small>Candidate ID</small>
+
+            <strong>{{ candidate.id }}</strong>
+
+        </div>
+
+        <div class="selected">
+            ✓ Shortlisted for Interview
+        </div>
+
+    </div>
+
+    <!-- Interview Rounds -->
+
+    <section class="rounds">
+
+        <!-- Round 1 -->
+
+        <article class="round-card">
+
+            <div class="round-number">
+                01
+            </div>
+
+            <div class="round-icon">
+                📝
+            </div>
+
+            <h2>Aptitude / Screening</h2>
+
+            <p>
+                A preliminary assessment to evaluate logical
+                reasoning, basic aptitude and problem-solving
+                ability.
+            </p>
+
+            <span class="duration">
+                ⏱ Approx. 30 minutes
+            </span>
+
+        </article>
+
+        <!-- Round 2 -->
+
+        <article class="round-card">
+
+            <div class="round-number">
+                02
+            </div>
+
+            <div class="round-icon">
+                💻
+            </div>
+
+            <h2>Technical Interview</h2>
+
+            <p>
+                A technical discussion covering your core
+                concepts, projects, programming knowledge and
+                problem-solving skills.
+            </p>
+
+            <span class="duration">
+                ⏱ Approx. 30–45 minutes
+            </span>
+
+        </article>
+
+        <!-- Round 3 -->
+
+        <article class="round-card">
+
+            <div class="round-number">
+                03
+            </div>
+
+            <div class="round-icon">
+                👔
+            </div>
+
+            <h2>Managerial Discussion</h2>
+
+            <p>
+                A discussion focused on communication,
+                decision-making, teamwork and how you approach
+                professional situations.
+            </p>
+
+            <span class="duration">
+                ⏱ Approx. 20–30 minutes
+            </span>
+
+        </article>
+
+        <!-- Round 4 -->
+
+        <article class="round-card">
+
+            <div class="round-number">
+                04
+            </div>
+
+            <div class="round-icon">
+                🤝
+            </div>
+
+            <h2>HR Interview</h2>
+
+            <p>
+                The final interaction covering your background,
+                expectations, communication and overall
+                suitability for the organization.
+            </p>
+
+            <span class="duration">
+                ⏱ Approx. 15–20 minutes
+            </span>
+
+        </article>
+
+    </section>
+
+    <!-- Notice -->
+
+    <div class="notice">
+
+        <div class="notice-icon">
+            💡
+        </div>
+
+        <div>
+
+            <h3>About Your Schedule</h3>
+
+            <p>
+                Your interview rounds are organized by the
+                organization. Buffer and refreshment periods may
+                be included between rounds so that you have
+                sufficient time to prepare and move to the next
+                session.
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- Continue -->
+
+    <div class="button-area">
+
+        <a href="{{ url_for('schedule', candidate_id=candidate.id) }}" class="continue-button">
+    View My Interview Schedule →
+</a>
+
+       <a href="{{ url_for('process', candidate_id=candidate.id) }}" class="back">
+    ← Back to Interview Process
+</a>
+
+    </div>
+
+</main>
+
+
+</body>
+
+</html>
