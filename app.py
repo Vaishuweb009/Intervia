@@ -1,11 +1,24 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from datetime import datetime, timedelta
-import sqlite3
+import os
+from dotenv import load_dotenv
+from supabase import create_client, Client
+
+load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError("SUPABASE_URL and SUPABASE_KEY must be set in .env")
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 app = Flask(__name__)
 app.secret_key = "interviewflow-admin-secret-key"
 
-DATABASE = "interviewflow.db"
+
 
 ROOMS = [
     "Assessment Hall A",
@@ -20,91 +33,14 @@ ROOMS = [
 # =========================================================
 
 def get_db():
-
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-
-    return conn
-
+    return supabase
 
 # =========================================================
 # CREATE DATABASE TABLES
 # =========================================================
 
 def init_db():
-
-    conn = get_db()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS candidates (
-            id TEXT PRIMARY KEY,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL,
-            status TEXT DEFAULT 'Added'
-        )
-    """)
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS interview_schedules (
-
-            candidate_id TEXT PRIMARY KEY,
-
-            date TEXT NOT NULL,
-            formatted_date TEXT,
-            weekday TEXT,
-
-            starting_time TEXT,
-            starting_time_raw TEXT,
-
-            reporting_time TEXT,
-            reporting_date TEXT,
-
-            room TEXT NOT NULL,
-
-            session_start_raw TEXT,
-            session_end_raw TEXT,
-
-            session_start TEXT,
-            session_end TEXT,
-
-            buffer_time INTEGER,
-            number_of_candidates INTEGER,
-
-            aptitude_duration INTEGER,
-            technical_duration INTEGER,
-            managerial_duration INTEGER,
-            hr_duration INTEGER,
-
-            round1_start TEXT,
-            round1_end TEXT,
-
-            break1_start TEXT,
-            break1_end TEXT,
-
-            round2_start TEXT,
-            round2_end TEXT,
-
-            break2_start TEXT,
-            break2_end TEXT,
-
-            round3_start TEXT,
-            round3_end TEXT,
-
-            break3_start TEXT,
-            break3_end TEXT,
-
-            round4_start TEXT,
-            round4_end TEXT,
-
-            FOREIGN KEY(candidate_id)
-            REFERENCES candidates(id)
-        )
-    """)
-
-    conn.commit()
-    conn.close()
-
+    print("Supabase database connected.")
 
 init_db()
 
@@ -114,79 +50,65 @@ init_db()
 # =========================================================
 
 def get_all_candidates():
+    response = (
+        supabase
+        .table("candidates")
+        .select("*")
+        .order("id")
+        .execute()
+    )
 
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT *
-        FROM candidates
-        ORDER BY id
-    """).fetchall()
-
-    conn.close()
-
-    return [dict(row) for row in rows]
+    return response.data or []
 
 
 def find_candidate(candidate_id):
-
     if not candidate_id:
         return None
 
-    conn = get_db()
+    response = (
+        supabase
+        .table("candidates")
+        .select("*")
+        .ilike("id", candidate_id)
+        .limit(1)
+        .execute()
+    )
 
-    row = conn.execute("""
-        SELECT *
-        FROM candidates
-        WHERE UPPER(id) = UPPER(?)
-    """, (candidate_id,)).fetchone()
+    data = response.data or []
 
-    conn.close()
-
-    if row is None:
-        return None
-
-    return dict(row)
-
+    return data[0] if data else None
 
 # =========================================================
 # SCHEDULE DATABASE FUNCTIONS
 # =========================================================
 
 def get_schedule(candidate_id):
+    response = (
+        supabase
+        .table("interview_schedules")
+        .select("*")
+        .eq("candidate_id", candidate_id)
+        .limit(1)
+        .execute()
+    )
 
-    conn = get_db()
+    data = response.data or []
 
-    row = conn.execute("""
-        SELECT *
-        FROM interview_schedules
-        WHERE candidate_id = ?
-    """, (candidate_id,)).fetchone()
-
-    conn.close()
-
-    if row is None:
-        return None
-
-    return dict(row)
+    return data[0] if data else None
 
 
 def get_all_schedules():
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT *
-        FROM interview_schedules
-    """).fetchall()
-
-    conn.close()
+    response = (
+        supabase
+        .table("interview_schedules")
+        .select("*")
+        .execute()
+    )
 
     return {
-        row["candidate_id"]: dict(row)
-        for row in rows
+        row["candidate_id"]: row
+        for row in (response.data or [])
     }
-
 
 # =========================================================
 # CALCULATE INTERVIEW TIMES
@@ -317,23 +239,18 @@ def room_is_available(
     ignore_candidate_id=None
 ):
 
-    conn = get_db()
+    response = (
+        supabase
+        .table("interview_schedules")
+        .select(
+            "candidate_id,session_start_raw,session_end_raw,room"
+        )
+        .eq("date", interview_date)
+        .eq("room", room)
+        .execute()
+    )
 
-    rows = conn.execute("""
-        SELECT
-            candidate_id,
-            session_start_raw,
-            session_end_raw,
-            room
-        FROM interview_schedules
-        WHERE date = ?
-        AND room = ?
-    """, (
-        interview_date,
-        room
-    )).fetchall()
-
-    conn.close()
+    rows = response.data or []
 
     for row in rows:
 
@@ -348,13 +265,8 @@ def room_is_available(
         ):
             continue
 
-        existing_start_string = (
-            row["session_start_raw"]
-        )
-
-        existing_end_string = (
-            row["session_end_raw"]
-        )
+        existing_start_string = row["session_start_raw"]
+        existing_end_string = row["session_end_raw"]
 
         if (
             not existing_start_string
@@ -382,8 +294,6 @@ def room_is_available(
             return False
 
     return True
-
-
 # =========================================================
 # HOME
 # =========================================================
@@ -685,6 +595,7 @@ def admin():
     "/add-candidate",
     methods=["POST"]
 )
+
 def add_candidate():
 
     if not session.get("admin_logged_in"):
@@ -717,21 +628,23 @@ def add_candidate():
             url_for("admin")
         )
 
-    conn = get_db()
+    response = (
+        supabase
+        .table("candidates")
+        .select("id")
+        .order("id", desc=True)
+        .limit(1)
+        .execute()
+    )
 
-    row = conn.execute("""
-        SELECT id
-        FROM candidates
-        ORDER BY id DESC
-        LIMIT 1
-    """).fetchone()
+    rows = response.data or []
 
-    if row:
+    if rows:
 
         try:
 
             last_number = int(
-                row["id"].split("-")[1]
+                rows[0]["id"].split("-")[1]
             )
 
             next_number = (
@@ -753,24 +666,12 @@ def add_candidate():
         f"INT-{next_number}"
     )
 
-    conn.execute("""
-        INSERT INTO candidates
-        (
-            id,
-            name,
-            email,
-            status
-        )
-        VALUES (?, ?, ?, ?)
-    """, (
-        candidate_id,
-        name,
-        email,
-        "Added"
-    ))
-
-    conn.commit()
-    conn.close()
+    supabase.table("candidates").insert({
+        "id": candidate_id,
+        "name": name,
+        "email": email,
+        "status": "Added"
+    }).execute()
 
     print(f"Generated ID    : {candidate_id}")
     print("STATUS          : CANDIDATE ADDED")
@@ -780,7 +681,6 @@ def add_candidate():
     return redirect(
         url_for("admin")
     )
-
 
 # =========================================================
 # FIND AVAILABLE ROOMS
@@ -1316,215 +1216,156 @@ def book_room():
     )
 
     # =====================================================
-    # SAVE SCHEDULE TO SQLITE
-    # =====================================================
+# SAVE SCHEDULE TO SUPABASE
+# =====================================================
 
-    conn = get_db()
+    schedule_data = {
 
-    conn.execute("""
-        INSERT OR REPLACE INTO interview_schedules (
-            candidate_id,
-            date,
-            formatted_date,
-            weekday,
-            starting_time,
-            starting_time_raw,
-            reporting_time,
-            reporting_date,
-            room,
-            session_start_raw,
-            session_end_raw,
-            session_start,
-            session_end,
-            buffer_time,
-            number_of_candidates,
-            aptitude_duration,
-            technical_duration,
-            managerial_duration,
-            hr_duration,
-            round1_start,
-            round1_end,
-            break1_start,
-            break1_end,
-            round2_start,
-            round2_end,
-            break2_start,
-            break2_end,
-            round3_start,
-            round3_end,
-            break3_start,
-            break3_end,
-            round4_start,
-            round4_end
-        )
-        VALUES (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-        )
-    """, (
+        "candidate_id": selected_candidate["id"],
 
-        selected_candidate["id"],
+        "date": interview_date,
 
-        interview_date,
-
-        start_datetime.strftime(
+        "formatted_date": start_datetime.strftime(
             "%d %B %Y"
         ),
 
-        start_datetime.strftime(
+        "weekday": start_datetime.strftime(
             "%A"
         ),
 
-        start_datetime.strftime(
+        "starting_time": start_datetime.strftime(
             "%I:%M %p"
         ),
 
-        starting_time,
+        "starting_time_raw": starting_time,
 
-        times[
+        "reporting_time": times[
             "reporting_datetime"
         ].strftime(
             "%I:%M %p"
         ),
 
-        times[
+        "reporting_date": times[
             "reporting_datetime"
         ].strftime(
             "%d %B %Y"
         ),
 
-        selected_room,
+        "room": selected_room,
 
-        start_datetime.strftime(
+        "session_start_raw": start_datetime.strftime(
             "%Y-%m-%d %H:%M"
         ),
 
-        end_datetime.strftime(
+        "session_end_raw": end_datetime.strftime(
             "%Y-%m-%d %H:%M"
         ),
 
-        start_datetime.strftime(
+        "session_start": start_datetime.strftime(
             "%I:%M %p"
         ),
 
-        end_datetime.strftime(
+        "session_end": end_datetime.strftime(
             "%I:%M %p"
         ),
 
-        buffer_time,
+        "buffer_time": buffer_time,
 
-        number_of_candidates,
+        "number_of_candidates": number_of_candidates,
 
-        aptitude_duration,
+        "aptitude_duration": aptitude_duration,
 
-        technical_duration,
+        "technical_duration": technical_duration,
 
-        managerial_duration,
+        "managerial_duration": managerial_duration,
 
-        hr_duration,
+        "hr_duration": hr_duration,
 
-        times[
+        "round1_start": times[
             "round1_start"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "round1_end": times[
             "round1_end"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "break1_start": times[
             "break1_start"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "break1_end": times[
             "break1_end"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "round2_start": times[
             "round2_start"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "round2_end": times[
             "round2_end"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "break2_start": times[
             "break2_start"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "break2_end": times[
             "break2_end"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "round3_start": times[
             "round3_start"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "round3_end": times[
             "round3_end"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "break3_start": times[
             "break3_start"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "break3_end": times[
             "break3_end"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "round4_start": times[
             "round4_start"
-        ].strftime(
-            "%I:%M %p"
-        ),
+        ].strftime("%I:%M %p"),
 
-        times[
+        "round4_end": times[
             "round4_end"
-        ].strftime(
-            "%I:%M %p"
-        )
-    ))
+        ].strftime("%I:%M %p")
+    }
+
+    supabase.table(
+        "interview_schedules"
+    ).upsert(
+        schedule_data,
+        on_conflict="candidate_id"
+    ).execute()
+
+    supabase.table(
+        "candidates"
+    ).update({
+        "status": "Scheduled"
+    }).eq(
+        "id",
+        selected_candidate["id"]
+    ).execute()
 
     # =====================================================
     # UPDATE CANDIDATE STATUS
     # =====================================================
 
-    conn.execute("""
-        UPDATE candidates
-        SET status = ?
-        WHERE id = ?
-    """, (
-        "Scheduled",
-        selected_candidate["id"]
-    ))
-
-    conn.commit()
-    conn.close()
-
+    supabase.table(
+    "candidates"
+).update({
+    "status": "Scheduled"
+}).eq(
+    "id",
+    selected_candidate["id"]
+).execute()
     print("-" * 55)
     print("STATUS       : BOOKED SUCCESSFULLY")
     print("=" * 55)
