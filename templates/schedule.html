@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Interview Schedule | InterviewFlow</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7ff, #eaf0ff);
+            color: #20243a;
+            padding: 35px 20px 50px;
+        }
+
+        .circle {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0.35;
+            z-index: 0;
+        }
+
+        .circle.one {
+            width: 280px;
+            height: 280px;
+            background: #d6ddff;
+            top: -100px;
+            left: -90px;
+        }
+
+        .circle.two {
+            width: 350px;
+            height: 350px;
+            background: #e5ddff;
+            right: -130px;
+            bottom: -130px;
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand {
+            color: #5967b3;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 38px;
+            color: #20243a;
+            margin-bottom: 9px;
+        }
+
+        .subtitle {
+            color: #70758a;
+            font-size: 15px;
+        }
+
+        /* Candidate information */
+
+        .top-info {
+            background: white;
+            border-radius: 18px;
+            padding: 20px 25px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(50, 60, 100, 0.08);
+            margin-bottom: 22px;
+        }
+
+        .info-item {
+            padding: 5px 12px;
+            border-right: 1px solid #eceef7;
+        }
+
+        .info-item:last-child {
+            border-right: none;
+        }
+
+        .info-label {
+            display: block;
+            color: #8b90a3;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #30354d;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Schedule */
+
+        .schedule-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 22px;
+            padding: 28px;
+            box-shadow: 0 12px 35px rgba(50, 60, 100, 0.09);
+        }
+
+        .schedule-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .schedule-heading h2 {
+            font-size: 22px;
+        }
+
+        .date-badge {
+            background: #eef0ff;
+            color: #5967b3;
+            padding: 9px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .timeline {
+            position: relative;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 22px;
+            top: 15px;
+            bottom: 15px;
+            width: 2px;
+            background: #dfe3f4;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 45px 105px 1fr;
+            gap: 18px;
+            align-items: start;
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .timeline-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #eef0ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 19px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .time {
+            color: #5967b3;
+            font-size: 14px;
+            font-weight: 700;
+            padding-top: 12px;
+        }
+
+        .time span {
+            display: block;
+            font-size: 11px;
+            color: #999fb2;
+            margin-top: 3px;
+            font-weight: 500;
+        }
+
+        .event {
+            background: #fafbff;
+            border: 1px solid #eceef7;
+            border-radius: 13px;
+            padding: 15px 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .event-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #30354d;
+            margin-bottom: 7px;
+        }
+
+        .event-location {
+            font-size: 12px;
+            color: #73798d;
+        }
+
+        .event-location strong {
+            color: #5967b3;
+        }
+
+        .round-tag {
+            background: #eef0ff;
+            color: #5967b3;
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* Break */
+
+        .break-item .timeline-icon {
+            background: #fff7e7;
+        }
+
+        .break-item .event {
+            background: #fffdfa;
+        }
+
+        .break-item .event-title {
+            color: #8a7444;
+        }
+
+        .break-item .time {
+            color: #8a7444;
+        }
+
+        .break-item .round-tag {
+            background: #fff3d6;
+            color: #8a7444;
+        }
+
+        /* Room */
+
+        .room-badge {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: #e9f8fa;
+            color: #087f8c;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Reporting */
+
+        .reporting-box {
+            margin-top: 28px;
+            background: linear-gradient(
+                135deg,
+                #5967b3,
+                #707dc7
+            );
+            color: white;
+            border-radius: 16px;
+            padding: 20px 22px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .reporting-icon {
+            font-size: 25px;
+        }
+
+        .reporting-box h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .reporting-box p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* Buttons */
+
+        .buttons {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .continue-button {
+            display: inline-block;
+            padding: 13px 25px;
+            background: #5967b3;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .continue-button:hover {
+            background: #4d599f;
+        }
+
+        .back {
+            display: block;
+            margin-top: 14px;
+            color: #5967b3;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+        /* Pending */
+
+        .pending {
+            background: white;
+            border-radius: 22px;
+            padding: 50px 25px;
+            text-align: center;
+            color: #777d92;
+            box-shadow: 0 12px 35px rgba(50, 60, 100, 0.09);
+        }
+
+        .pending h2 {
+            color: #30354d;
+            margin-bottom: 10px;
+        }
+
+        .pending p {
+            font-size: 13px;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 700px) {
+
+            .top-info {
+                grid-template-columns: 1fr;
+            }
+
+            .info-item {
+                border-right: none;
+                border-bottom: 1px solid #eceef7;
+                padding-bottom: 12px;
+            }
+
+            .info-item:last-child {
+                border-bottom: none;
+            }
+
+            .timeline-item {
+                grid-template-columns: 45px 1fr;
+                gap: 12px;
+            }
+
+            .timeline-item .time {
+                grid-column: 2;
+                grid-row: 1;
+                padding-top: 0;
+                margin-bottom: -5px;
+            }
+
+            .timeline-item .event {
+                grid-column: 2;
+                grid-row: 2;
+            }
+
+            .timeline::before {
+                left: 21px;
+            }
+
+            .schedule-heading {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+        }
+
+        @media (max-width: 450px) {
+
+            body {
+                padding: 25px 12px 40px;
+            }
+
+            .schedule-card {
+                padding: 20px 15px;
+            }
+
+            .event {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="circle one"></div>
+<div class="circle two"></div>
+
+
+<main class="page">
+
+
+    <!-- =================================================
+         HEADER
+    ================================================= -->
+
+    <header class="header">
+
+        <div class="brand">
+            Intervia
+        </div>
+
+        <h1>
+            Your Interview Schedule
+        </h1>
+
+        <p class="subtitle">
+            Your complete interview itinerary has been arranged
+            by the organization.
+        </p>
+
+    </header>
+
+
+    <!-- =================================================
+         CANDIDATE INFORMATION
+    ================================================= -->
+
+    <section class="top-info">
+
+
+        <div class="info-item">
+
+            <span class="info-label">
+                Candidate Name
+            </span>
+
+            <span class="info-value">
+                {{ candidate.name }}
+            </span>
+
+        </div>
+
+
+        <div class="info-item">
+
+            <span class="info-label">
+                Candidate ID
+            </span>
+
+            <span class="info-value">
+                {{ candidate.id }}
+            </span>
+
+        </div>
+
+
+        <div class="info-item">
+
+            <span class="info-label">
+                Interview Date
+            </span>
+
+            <span class="info-value">
+
+                {% if schedule %}
+                    {{ schedule.formatted_date }}
+                {% else %}
+                    Not scheduled
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+    </section>
+
+
+    {% if schedule %}
+
+
+    <!-- =================================================
+         SCHEDULE
+    ================================================= -->
+
+    <section class="schedule-card">
+
+
+        <div class="schedule-heading">
+
+            <h2>
+                Interview Itinerary
+            </h2>
+
+            <div class="date-badge">
+
+                📅
+                {{ schedule.weekday }},
+                {{ schedule.formatted_date }}
+
+            </div>
+
+        </div>
+
+
+        <div class="timeline">
+
+
+            <!-- =================================================
+                 ROUND 1
+            ================================================= -->
+
+            <div class="timeline-item">
+
+                <div class="timeline-icon">
+                    📝
+                </div>
+
+                <div class="time">
+
+                    {{ schedule.round1_start }}
+
+                    <span>
+                        {{ schedule.aptitude_duration }} minutes
+                    </span>
+
+                </div>
+
+                <div class="event">
+
+                    <div>
+
+                        <div class="event-title">
+                            Aptitude / Screening
+                        </div>
+
+                        <div class="event-location">
+
+                            📍
+
+                            <strong>
+                                {{ schedule.room }}
+                            </strong>
+
+                        </div>
+
+                        <div class="room-badge">
+                            🏢 Assigned Interview Room
+                        </div>
+
+                    </div>
+
+                    <div class="round-tag">
+                        Round 1
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 BREAK 1
+            ================================================= -->
+
+            <div class="timeline-item break-item">
+
+                <div class="timeline-icon">
+                    ☕
+                </div>
+
+                <div class="time">
+
+                    {{ schedule.break1_start }}
+
+                    <span>
+                        {{ schedule.buffer_time }} minutes
+                    </span>
+
+                </div>
+
+                <div class="event">
+
+                    <div>
+
+                        <div class="event-title">
+                            Break / Refreshment
+                        </div>
+
+                        <div class="event-location">
+                            Until {{ schedule.break1_end }}
+                        </div>
+
+                    </div>
+
+                    <div class="round-tag">
+                        Buffer
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ROUND 2
+            ================================================= -->
+
+            <div class="timeline-item">
+
+                <div class="timeline-icon">
+                    💻
+                </div>
+
+                <div class="time">
+
+                    {{ schedule.round2_start }}
+
+                    <span>
+                        {{ schedule.technical_duration }} minutes
+                    </span>
+
+                </div>
+
+                <div class="event">
+
+                    <div>
+
+                        <div class="event-title">
+                            Technical Interview
+                        </div>
+
+                        <div class="event-location">
+
+                            📍
+
+                            <strong>
+                                {{ schedule.room }}
+                            </strong>
+
+                        </div>
+
+                        <div class="room-badge">
+                            🏢 Same Assigned Room
+                        </div>
+
+                    </div>
+
+                    <div class="round-tag">
+                        Round 2
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 BREAK 2
+            ================================================= -->
+
+            <div class="timeline-item break-item">
+
+                <div class="timeline-icon">
+                    ☕
+                </div>
+
+                <div class="time">
+
+                    {{ schedule.break2_start }}
+
+                    <span>
+                        {{ schedule.buffer_time }} minutes
+                    </span>
+
+                </div>
+
+                <div class="event">
+
+                    <div>
+
+                        <div class="event-title">
+                            Break / Refreshment
+                        </div>
+
+                        <div class="event-location">
+                            Until {{ schedule.break2_end }}
+                        </div>
+
+                    </div>
+
+                    <div class="round-tag">
+                        Buffer
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ROUND 3
+            ================================================= -->
+
+            <div class="timeline-item">
+
+                <div class="timeline-icon">
+                    👔
+                </div>
+
+                <div class="time">
+
+                    {{ schedule.round3_start }}
+
+                    <span>
+                        {{ schedule.managerial_duration }} minutes
+                    </span>
+
+                </div>
+
+                <div class="event">
+
+                    <div>
+
+                        <div class="event-title">
+                            Managerial Discussion
+                        </div>
+
+                        <div class="event-location">
+
+                            📍
+
+                            <strong>
+                                {{ schedule.room }}
+                            </strong>
+
+                        </div>
+
+                        <div class="room-badge">
+                            🏢 Same Assigned Room
+                        </div>
+
+                    </div>
+
+                    <div class="round-tag">
+                        Round 3
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 BREAK 3
+            ================================================= -->
+
+            <div class="timeline-item break-item">
+
+                <div class="timeline-icon">
+                    ☕
+                </div>
+
+                <div class="time">
+
+                    {{ schedule.break3_start }}
+
+                    <span>
+                        {{ schedule.buffer_time }} minutes
+                    </span>
+
+                </div>
+
+                <div class="event">
+
+                    <div>
+
+                        <div class="event-title">
+                            Break / Refreshment
+                        </div>
+
+                        <div class="event-location">
+                            Until {{ schedule.break3_end }}
+                        </div>
+
+                    </div>
+
+                    <div class="round-tag">
+                        Buffer
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ROUND 4
+            ================================================= -->
+
+            <div class="timeline-item">
+
+                <div class="timeline-icon">
+                    🤝
+                </div>
+
+                <div class="time">
+
+                    {{ schedule.round4_start }}
+
+                    <span>
+                        {{ schedule.hr_duration }} minutes
+                    </span>
+
+                </div>
+
+                <div class="event">
+
+                    <div>
+
+                        <div class="event-title">
+                            HR Interview
+                        </div>
+
+                        <div class="event-location">
+
+                            📍
+
+                            <strong>
+                                {{ schedule.room }}
+                            </strong>
+
+                        </div>
+
+                        <div class="room-badge">
+                            🏢 Same Assigned Room
+                        </div>
+
+                    </div>
+
+                    <div class="round-tag">
+                        Round 4
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             REPORTING INFORMATION
+        ================================================= -->
+
+        <div class="reporting-box">
+
+            <div class="reporting-icon">
+                🕐
+            </div>
+
+            <div>
+
+                <h3>
+                    Please arrive by
+                    {{ schedule.reporting_time }}
+                </h3>
+
+                <p>
+                    Reporting is 30 minutes before
+                    your Round 1 starting time.
+                </p>
+
+                <p style="margin-top:5px;">
+
+                    Interview starts at
+                    {{ schedule.starting_time }}
+
+                    and ends at
+                    {{ schedule.session_end }}.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =================================================
+         BUTTONS
+    ================================================= -->
+
+    <div class="buttons">
+
+        <a
+            href="{{ url_for('instructions', candidate_id=candidate.id) }}"
+            class="continue-button"
+        >
+            View Candidate Instructions →
+        </a>
+
+
+        <a
+            href="{{ url_for('process', candidate_id=candidate.id) }}"
+            class="back"
+        >
+            ← Back to Interview Process
+        </a>
+
+    </div>
+
+
+    {% else %}
+
+
+    <!-- =================================================
+         NO SCHEDULE
+    ================================================= -->
+
+    <section class="pending">
+
+        <h2>
+            Schedule Not Available Yet
+        </h2>
+
+        <p>
+            Your interview has been verified, but the
+            administrator has not generated your schedule yet.
+        </p>
+
+    </section>
+
+
+    <div class="buttons">
+
+        <a
+            href="{{ url_for('process', candidate_id=candidate.id) }}"
+            class="back"
+        >
+            ← Back to Interview Process
+        </a>
+
+    </div>
+
+
+    {% endif %}
+
+
+</main>
+
+</body>
+
+</html>

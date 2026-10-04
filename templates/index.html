@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>InterviewFlow</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+
+        body {
+            min-height: 100vh;
+            background:
+                linear-gradient(
+                    135deg,
+                    #f5f7ff,
+                    #eaf0ff
+                );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: #20243a;
+            padding: 30px;
+        }
+
+
+        /* =====================================================
+           BACKGROUND DECORATION
+        ===================================================== */
+
+        .circle {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(3px);
+            opacity: 0.35;
+            z-index: 0;
+        }
+
+        .circle.one {
+            width: 350px;
+            height: 350px;
+            background: #d8ddff;
+            top: -150px;
+            left: -120px;
+        }
+
+        .circle.two {
+            width: 420px;
+            height: 420px;
+            background: #e3d9ff;
+            bottom: -190px;
+            right: -150px;
+        }
+
+        .circle.three {
+            width: 180px;
+            height: 180px;
+            background: #edf0ff;
+            top: 25%;
+            right: 12%;
+        }
+
+
+        /* =====================================================
+           MAIN CARD
+        ===================================================== */
+
+        .main-card {
+            position: relative;
+            z-index: 1;
+            width: min(900px, 95%);
+            min-height: 520px;
+            background: rgba(255, 255, 255, 0.94);
+            border-radius: 30px;
+            box-shadow:
+                0 25px 65px rgba(55, 65, 110, 0.13);
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            align-items: center;
+            padding: 55px;
+            overflow: hidden;
+            animation: cardAppear 0.8s ease;
+        }
+
+
+        /* =====================================================
+           LEFT CONTENT
+        ===================================================== */
+
+        .content {
+            padding-right: 25px;
+        }
+
+        .brand {
+            display: inline-block;
+            color: #5967b3;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 47px;
+            line-height: 1.15;
+            color: #252941;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        h1 span {
+            color: #5967b3;
+        }
+
+        .tagline {
+            max-width: 460px;
+            color: #72778b;
+            font-size: 16px;
+            line-height: 1.75;
+            margin-bottom: 30px;
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .start-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 125px;
+            padding: 14px 28px;
+            background: #5967b3;
+            color: white;
+            text-decoration: none;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow:
+                0 9px 22px rgba(89, 103, 179, 0.22);
+            transition:
+                transform 0.25s ease,
+                background 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .start-button:hover {
+            background: #4d5ba6;
+            transform: translateY(-3px);
+            box-shadow:
+                0 13px 27px rgba(89, 103, 179, 0.28);
+        }
+
+        .candidate-button {
+            background: #ffffff;
+            color: #5967b3;
+            border: 1px solid #d5d9ef;
+        }
+
+        .candidate-button:hover {
+            background: #f5f6ff;
+            color: #4d5ba6;
+        }
+
+        .small-text {
+            margin-top: 18px;
+            color: #a0a4b2;
+            font-size: 11px;
+        }
+
+
+        /* =====================================================
+           RIGHT ILLUSTRATION
+        ===================================================== */
+
+        .illustration-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            height: 390px;
+        }
+
+        .illustration {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            animation: float 4s ease-in-out infinite;
+        }
+
+
+        /* =====================================================
+           ILLUSTRATION BACK CIRCLE
+        ===================================================== */
+
+        .illustration-bg {
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: #f0efff;
+            top: 20px;
+            left: 20px;
+        }
+
+
+        /* =====================================================
+           LAPTOP
+        ===================================================== */
+
+        .laptop {
+            position: absolute;
+            width: 190px;
+            height: 125px;
+            background: #ffffff;
+            border: 8px solid #5967b3;
+            border-radius: 13px;
+            left: 55px;
+            top: 65px;
+            box-shadow:
+                0 12px 25px rgba(89, 103, 179, 0.16);
+        }
+
+        .screen {
+            position: absolute;
+            width: 155px;
+            height: 88px;
+            background: #f3f4ff;
+            left: 10px;
+            top: 10px;
+            border-radius: 5px;
+            padding: 12px;
+        }
+
+        .screen-line {
+            height: 7px;
+            border-radius: 5px;
+            background: #cbd0ee;
+            margin-bottom: 8px;
+        }
+
+        .screen-line.short {
+            width: 55%;
+        }
+
+        .screen-line.medium {
+            width: 75%;
+        }
+
+        .screen-line.long {
+            width: 90%;
+        }
+
+        .laptop-base {
+            position: absolute;
+            width: 220px;
+            height: 14px;
+            background: #5967b3;
+            border-radius: 0 0 15px 15px;
+            left: -23px;
+            bottom: -22px;
+        }
+
+
+        /* =====================================================
+           PERSON
+        ===================================================== */
+
+        .person {
+            position: absolute;
+            right: 15px;
+            bottom: 5px;
+            width: 105px;
+            height: 175px;
+        }
+
+        .head {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #f1c8aa;
+            top: 0;
+            left: 30px;
+        }
+
+        .hair {
+            position: absolute;
+            width: 49px;
+            height: 35px;
+            background: #45445d;
+            border-radius: 30px 30px 10px 10px;
+            top: -5px;
+            left: 28px;
+        }
+
+        .body-shape {
+            position: absolute;
+            width: 80px;
+            height: 95px;
+            background: #5967b3;
+            border-radius: 35px 35px 12px 12px;
+            top: 43px;
+            left: 13px;
+        }
+
+        .arm {
+            position: absolute;
+            width: 22px;
+            height: 75px;
+            background: #5967b3;
+            border-radius: 20px;
+            transform: rotate(-35deg);
+            top: 52px;
+            left: 0;
+        }
+
+        .arm-two {
+            position: absolute;
+            width: 22px;
+            height: 70px;
+            background: #5967b3;
+            border-radius: 20px;
+            transform: rotate(35deg);
+            top: 52px;
+            right: 0;
+        }
+
+
+        /* =====================================================
+           FLOATING DOCUMENT
+        ===================================================== */
+
+        .document {
+            position: absolute;
+            width: 65px;
+            height: 80px;
+            background: white;
+            border-radius: 8px;
+            right: 15px;
+            top: 30px;
+            transform: rotate(8deg);
+            box-shadow:
+                0 10px 22px rgba(70, 75, 120, 0.12);
+            padding: 13px;
+        }
+
+        .document-line {
+            height: 6px;
+            background: #d5d8ed;
+            border-radius: 5px;
+            margin-bottom: 8px;
+        }
+
+        .document-line.short {
+            width: 65%;
+        }
+
+
+        /* =====================================================
+           CLOCK
+        ===================================================== */
+
+        .clock {
+            position: absolute;
+            width: 55px;
+            height: 55px;
+            background: white;
+            border: 6px solid #8b91c9;
+            border-radius: 50%;
+            left: 10px;
+            top: 35px;
+            box-shadow:
+                0 8px 20px rgba(70, 75, 120, 0.1);
+        }
+
+        .clock-hand-one {
+            position: absolute;
+            width: 3px;
+            height: 18px;
+            background: #5967b3;
+            left: 22px;
+            top: 8px;
+            border-radius: 5px;
+            transform-origin: bottom;
+            transform: rotate(25deg);
+        }
+
+        .clock-hand-two {
+            position: absolute;
+            width: 15px;
+            height: 3px;
+            background: #5967b3;
+            left: 22px;
+            top: 25px;
+            border-radius: 5px;
+            transform: rotate(10deg);
+        }
+
+
+        /* =====================================================
+           CHECK MARK
+        ===================================================== */
+
+        .check {
+            position: absolute;
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+            background: #eef8f1;
+            color: #4d9864;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            right: 5px;
+            bottom: 25px;
+            box-shadow:
+                0 8px 18px rgba(70, 90, 80, 0.1);
+        }
+
+
+        /* =====================================================
+           DECORATIVE DOTS
+        ===================================================== */
+
+        .dot {
+            position: absolute;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #a7add8;
+        }
+
+        .dot.one {
+            left: 5px;
+            bottom: 70px;
+        }
+
+        .dot.two {
+            right: 50px;
+            top: 10px;
+        }
+
+        .dot.three {
+            left: 70px;
+            top: 5px;
+        }
+
+
+        /* =====================================================
+           ANIMATIONS
+        ===================================================== */
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 800px) {
+
+            body {
+                overflow-y: auto;
+            }
+
+            .main-card {
+                grid-template-columns: 1fr;
+                padding: 45px 35px;
+                text-align: center;
+            }
+
+            .content {
+                padding-right: 0;
+            }
+
+            .tagline {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .button-group {
+                justify-content: center;
+            }
+
+            .illustration-area {
+                height: 330px;
+                margin-top: 10px;
+            }
+        }
+
+
+        @media (max-width: 450px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .main-card {
+                width: 100%;
+                padding: 35px 22px;
+                border-radius: 23px;
+            }
+
+            h1 {
+                font-size: 35px;
+            }
+
+            .tagline {
+                font-size: 14px;
+            }
+
+            .illustration {
+                transform: scale(0.82);
+            }
+
+            .illustration-area {
+                height: 280px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .start-button {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         BACKGROUND
+    ====================================================== -->
+
+    <div class="circle one"></div>
+    <div class="circle two"></div>
+    <div class="circle three"></div>
+
+
+    <!-- =====================================================
+         MAIN CARD
+    ====================================================== -->
+
+    <main class="main-card">
+
+
+        <!-- =================================================
+             LEFT CONTENT
+        ================================================== -->
+
+        <section class="content">
+
+
+            <div class="brand">
+                Intervia
+            </div>
+
+
+            <h1>
+                Your Interview.<br>
+                <span>Perfectly Planned.</span>
+            </h1>
+
+
+            <p class="tagline">
+                A simple interview coordination platform that
+                keeps candidates, interview rounds, rooms and
+                timings organized in one place.
+            </p>
+
+
+            <!-- ADMIN + CANDIDATE BUTTONS -->
+
+            <div class="button-group">
+
+                <a href="{{ url_for('admin_login') }}"
+                   class="start-button">
+                    Admin
+                </a>
+
+                <a href="{{ url_for('candidate') }}"
+                   class="start-button candidate-button">
+                    Candidate
+                </a>
+
+            </div>
+
+
+            <p class="small-text">
+                Your interview journey starts here.
+            </p>
+
+
+        </section>
+
+
+        <!-- =================================================
+             RIGHT ILLUSTRATION
+        ================================================== -->
+
+        <section class="illustration-area">
+
+
+            <div class="illustration">
+
+
+                <div class="illustration-bg"></div>
+
+
+                <!-- LAPTOP -->
+
+                <div class="laptop">
+
+                    <div class="screen">
+
+                        <div class="screen-line long"></div>
+                        <div class="screen-line medium"></div>
+                        <div class="screen-line short"></div>
+                        <div class="screen-line medium"></div>
+                        <div class="screen-line long"></div>
+
+                    </div>
+
+                    <div class="laptop-base"></div>
+
+                </div>
+
+
+                <!-- PERSON -->
+
+                <div class="person">
+
+                    <div class="hair"></div>
+                    <div class="head"></div>
+                    <div class="body-shape"></div>
+                    <div class="arm"></div>
+                    <div class="arm-two"></div>
+
+                </div>
+
+
+                <!-- DOCUMENT -->
+
+                <div class="document">
+
+                    <div class="document-line"></div>
+                    <div class="document-line"></div>
+                    <div class="document-line short"></div>
+                    <div class="document-line"></div>
+                    <div class="document-line short"></div>
+
+                </div>
+
+
+                <!-- CLOCK -->
+
+                <div class="clock">
+
+                    <div class="clock-hand-one"></div>
+                    <div class="clock-hand-two"></div>
+
+                </div>
+
+
+                <!-- CHECK -->
+
+                <div class="check">
+                    ✓
+                </div>
+
+
+                <!-- DECORATIVE DOTS -->
+
+                <div class="dot one"></div>
+                <div class="dot two"></div>
+                <div class="dot three"></div>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>
