@@ -310,6 +310,10 @@ def home():
 # CANDIDATE VERIFICATION
 # =========================================================
 
+# =========================================================
+# CANDIDATE VERIFICATION
+# =========================================================
+
 @app.route(
     "/candidate",
     methods=["GET", "POST"]
@@ -330,7 +334,9 @@ def candidate():
         print("=" * 55)
         print("           CANDIDATE VERIFICATION")
         print("=" * 55)
-        print(f"Candidate ID Entered : {candidate_id}")
+        print(
+            f"Candidate ID Entered : {candidate_id}"
+        )
 
         verified_candidate = find_candidate(
             candidate_id
@@ -358,6 +364,20 @@ def candidate():
             )
 
             print("STATUS                : VERIFIED")
+            print("=" * 55)
+            print()
+
+            # =================================================
+            # DIRECT FLOW
+            # Candidate Verification → Schedule
+            # =================================================
+
+            return redirect(
+                url_for(
+                    "candidate_interview",
+                    candidate_id=verified_candidate["id"]
+                )
+            )
 
         print("=" * 55)
         print()
@@ -368,13 +388,12 @@ def candidate():
         error=error
     )
 
-
 # =========================================================
-# INTERVIEW PROCESS
+# CANDIDATE INTERVIEW ROUTING
 # =========================================================
 
-@app.route("/process")
-def process():
+@app.route("/candidate-interview")
+def candidate_interview():
 
     candidate_id = request.args.get(
         "candidate_id",
@@ -382,7 +401,6 @@ def process():
     ).strip()
 
     if not candidate_id:
-
         return redirect(
             url_for("candidate")
         )
@@ -392,14 +410,142 @@ def process():
     )
 
     if selected_candidate is None:
-
         return redirect(
             url_for("candidate")
         )
 
+    # -------------------------------------------------
+    # CHECK ONLINE INTERVIEW FIRST
+    # -------------------------------------------------
+
+    try:
+
+        online_rows = (
+            supabase
+            .table("online_interviews")
+            .select("*")
+            .eq(
+                "candidate_id",
+                selected_candidate["id"]
+            )
+            .order("interview_date")
+            .order("start_time")
+            .limit(1)
+            .execute()
+            .data
+            or []
+        )
+
+        if online_rows:
+
+            return redirect(
+                url_for(
+                    "online_details",
+                    candidate_id=selected_candidate["id"]
+                )
+            )
+
+    except Exception as exc:
+
+        print(
+            f"Online interview routing lookup failed: {exc}"
+        )
+
+    # -------------------------------------------------
+    # CHECK OFFLINE INTERVIEW
+    # -------------------------------------------------
+
+    schedule_data = get_schedule(
+        selected_candidate["id"]
+    )
+
+    if schedule_data:
+
+        return redirect(
+            url_for(
+                "schedule",
+                candidate_id=selected_candidate["id"]
+            )
+        )
+
+    # No schedule yet.
+    # The existing schedule page will show
+    # "Schedule Not Available Yet."
+
+    return redirect(
+        url_for(
+            "schedule",
+            candidate_id=selected_candidate["id"]
+        )
+    )
+
+
+# =========================================================
+# ONLINE INTERVIEW DETAILS
+# =========================================================
+
+@app.route("/online-details")
+def online_details():
+
+    candidate_id = request.args.get(
+        "candidate_id",
+        ""
+    ).strip()
+
+    if not candidate_id:
+        return redirect(
+            url_for("candidate")
+        )
+
+    selected_candidate = find_candidate(
+        candidate_id
+    )
+
+    if selected_candidate is None:
+        return redirect(
+            url_for("candidate")
+        )
+
+    try:
+
+        online_rows = (
+            supabase
+            .table("online_interviews")
+            .select("*")
+            .eq(
+                "candidate_id",
+                selected_candidate["id"]
+            )
+            .order("interview_date")
+            .order("start_time")
+            .limit(1)
+            .execute()
+            .data
+            or []
+        )
+
+    except Exception as exc:
+
+        print(
+            f"Online interview details lookup failed: {exc}"
+        )
+        online_rows = []
+
+    if not online_rows:
+
+        return redirect(
+            url_for(
+                "schedule",
+                candidate_id=selected_candidate["id"]
+            )
+        )
+
+    online_interview = online_rows[0]
+
     return render_template(
-        "process.html",
-        candidate=selected_candidate
+        "online_details.html",
+        candidate=selected_candidate,
+        online_interview=online_interview
     )
 
 
@@ -445,7 +591,6 @@ def schedule():
 # =========================================================
 # CANDIDATE INSTRUCTIONS
 # =========================================================
-
 @app.route("/instructions")
 def instructions():
 
@@ -454,33 +599,85 @@ def instructions():
         ""
     ).strip()
 
+    # No candidate ID
     if not candidate_id:
 
         return redirect(
             url_for("candidate")
         )
 
+    # Find candidate
     selected_candidate = find_candidate(
         candidate_id
     )
 
+    # Candidate not found
     if selected_candidate is None:
 
         return redirect(
             url_for("candidate")
         )
 
+    # Get offline interview schedule
     schedule_data = get_schedule(
         selected_candidate["id"]
     )
+
+    # -------------------------------------------------
+    # ONLINE INTERVIEW CHECK
+    # -------------------------------------------------
+
+    online_interview = None
+
+    try:
+
+        online_rows = (
+            supabase
+            .table("online_interviews")
+            .select("*")
+            .eq(
+                "candidate_id",
+                selected_candidate["id"]
+            )
+            .order("interview_date")
+            .order("start_time")
+            .limit(1)
+            .execute()
+            .data
+            or []
+        )
+
+        if online_rows:
+
+            online_interview = online_rows[0]
+
+    except Exception as exc:
+
+        print(
+            f"Online instruction lookup failed: {exc}"
+        )
+
+    # -------------------------------------------------
+    # ONLINE CANDIDATE
+    # -------------------------------------------------
+
+    if online_interview:
+
+        return render_template(
+            "online_instructions.html",
+            candidate=selected_candidate,
+            online_interview=online_interview
+        )
+
+    # -------------------------------------------------
+    # OFFLINE CANDIDATE
+    # -------------------------------------------------
 
     return render_template(
         "instructions.html",
         candidate=selected_candidate,
         schedule=schedule_data
     )
-
-
 # =========================================================
 # ADMIN LOGIN
 # =========================================================
@@ -1403,14 +1600,12 @@ ONLINE_INTERVIEWERS = [
 ]
 
 ONLINE_DEPARTMENTS = [
-    "HR",
     "IT",
-    "Front Desk",
-    "Management",
-    "Finance"
+    "HR",
+    "Finance",
+    "Marketing",
+    "Sales"
 ]
-
-DEFAULT_ONLINE_MEETING_LINK = "https://meet.google.com/abc-defg-hij"
 
 
 def get_online_interviews():
@@ -1478,10 +1673,12 @@ def interviewer_is_available(
         existing_start = online_time_to_minutes(
             row["start_time"]
         )
+
         existing_end = online_time_to_minutes(
             row["end_time"]
         )
 
+        # Same interviewer cannot have overlapping interviews
         if (
             requested_start < existing_end
             and requested_end > existing_start
@@ -1497,54 +1694,179 @@ def online_interview():
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin_login"))
 
-    candidates = get_all_candidates()
-    online_interviews = get_online_interviews()
-
     message = None
     error = None
+
+    # -----------------------------------------------------
+    # GET ALL CANDIDATES
+    # -----------------------------------------------------
+
+    candidates = get_all_candidates()
+
+    # -----------------------------------------------------
+    # GET OFFLINE SCHEDULED CANDIDATES
+    # -----------------------------------------------------
+
+    offline_scheduled_ids = set()
+
+    try:
+
+        offline_response = (
+            supabase
+            .table("interview_schedules")
+            .select("candidate_id")
+            .execute()
+        )
+
+        offline_scheduled_ids = {
+            str(row["candidate_id"])
+            for row in (offline_response.data or [])
+            if row.get("candidate_id")
+        }
+
+    except Exception as exc:
+
+        print(
+            f"Offline schedule lookup failed: {exc}"
+        )
+
+    # -----------------------------------------------------
+    # GET ONLINE INTERVIEWS
+    # -----------------------------------------------------
+
+    online_interviews = get_online_interviews()
+
+    # -----------------------------------------------------
+    # ONLINE SCHEDULED CANDIDATES
+    # -----------------------------------------------------
+
+    scheduled_ids = {
+        str(row["candidate_id"])
+        for row in online_interviews
+        if row.get("candidate_id")
+    }
+
+    # -----------------------------------------------------
+    # ONLINE INTERVIEW BY CANDIDATE
+    # -----------------------------------------------------
+
+    online_by_candidate = {}
+
+    for row in online_interviews:
+
+        candidate_id = str(
+            row.get("candidate_id", "")
+        )
+
+        if candidate_id:
+            online_by_candidate[candidate_id] = row
+
+    # -----------------------------------------------------
+    # AVAILABLE CANDIDATES
+    # -----------------------------------------------------
+    # Candidate must NOT already have:
+    # 1. Offline interview
+    # 2. Online interview
+    # -----------------------------------------------------
+
+    available_online_ids = {
+        str(candidate["id"])
+        for candidate in candidates
+        if str(candidate["id"]) not in offline_scheduled_ids
+        and str(candidate["id"]) not in scheduled_ids
+    }
+
+    remaining_online_candidates = len(
+        available_online_ids
+    )
+
+    # -----------------------------------------------------
+    # HANDLE ONLINE INTERVIEW FORM
+    # -----------------------------------------------------
 
     if request.method == "POST":
 
         candidate_id = request.form.get(
-            "candidate_id", ""
+            "candidate_id",
+            ""
         ).strip()
 
         department = request.form.get(
-            "department", ""
+            "department",
+            ""
         ).strip()
 
         interviewer = request.form.get(
-            "interviewer", ""
+            "interviewer",
+            ""
         ).strip()
 
         interview_date = request.form.get(
-            "interview_date", ""
+            "interview_date",
+            ""
         ).strip()
 
         start_time = request.form.get(
-            "start_time", ""
+            "start_time",
+            ""
         ).strip()
 
         end_time = request.form.get(
-            "end_time", ""
+            "end_time",
+            ""
         ).strip()
 
-        # A default Google Meet link is used for this demo system.
-        meeting_link = DEFAULT_ONLINE_MEETING_LINK
+        # -------------------------------------------------
+        # DEFAULT MEETING LINK
+        # -------------------------------------------------
 
-        candidate = find_candidate(candidate_id)
+        meeting_link = request.form.get(
+            "meeting_link",
+            ""
+        ).strip()
+
+        if not meeting_link:
+            meeting_link = (
+                "https://meet.google.com/abc-defg-hij"
+            )
+
+        # -------------------------------------------------
+        # FIND CANDIDATE
+        # -------------------------------------------------
+
+        candidate = find_candidate(
+            candidate_id
+        )
 
         if candidate is None:
 
-            error = "Please select a valid candidate."
+            error = (
+                "Please select a valid candidate."
+            )
+
+        # -------------------------------------------------
+        # CHECK INTERVIEWER
+        # -------------------------------------------------
 
         elif interviewer not in ONLINE_INTERVIEWERS:
 
-            error = "Please select a valid interviewer."
+            error = (
+                "Please select a valid interviewer."
+            )
+
+        # -------------------------------------------------
+        # CHECK DEPARTMENT
+        # -------------------------------------------------
 
         elif department not in ONLINE_DEPARTMENTS:
 
-            error = "Please select a valid department."
+            error = (
+                "Please select a valid department."
+            )
+
+        # -------------------------------------------------
+        # REQUIRED DETAILS
+        # -------------------------------------------------
 
         elif not all([
             interview_date,
@@ -1552,9 +1874,37 @@ def online_interview():
             end_time
         ]):
 
-            error = "Please fill all online interview details."
+            error = (
+                "Please fill all online interview details."
+            )
+
+        # -------------------------------------------------
+        # CHECK CANDIDATE OFFLINE SCHEDULE
+        # -------------------------------------------------
+
+        elif str(candidate_id) in offline_scheduled_ids:
+
+            error = (
+                "This candidate already has an offline "
+                "interview scheduled."
+            )
+
+        # -------------------------------------------------
+        # CHECK CANDIDATE ONLINE SCHEDULE
+        # -------------------------------------------------
+
+        elif str(candidate_id) in scheduled_ids:
+
+            error = (
+                "This candidate already has an online "
+                "interview scheduled."
+            )
 
         else:
+
+            # ---------------------------------------------
+            # CHECK TIME FORMAT
+            # ---------------------------------------------
 
             try:
 
@@ -1571,12 +1921,22 @@ def online_interview():
                 start_minutes = -1
                 end_minutes = -1
 
+            # ---------------------------------------------
+            # CHECK TIME ORDER
+            # ---------------------------------------------
+
             if (
                 start_minutes < 0
                 or end_minutes <= start_minutes
             ):
 
-                error = "End time must be later than start time."
+                error = (
+                    "End time must be later than start time."
+                )
+
+            # ---------------------------------------------
+            # CHECK INTERVIEWER OVERLAP
+            # ---------------------------------------------
 
             elif not interviewer_is_available(
                 interviewer,
@@ -1586,30 +1946,18 @@ def online_interview():
             ):
 
                 error = (
-                    f"{interviewer} is already scheduled during "
-                    f"this time. Please choose another time or interviewer."
+                    f"{interviewer} is already scheduled "
+                    f"during this time. Please choose "
+                    f"another time or interviewer."
                 )
 
             else:
 
-                existing_candidate = (
-                    supabase
-                    .table("online_interviews")
-                    .select("id")
-                    .eq("candidate_id", candidate_id)
-                    .eq("interview_date", interview_date)
-                    .limit(1)
-                    .execute()
-                )
+                # -----------------------------------------
+                # INSERT ONLINE INTERVIEW
+                # -----------------------------------------
 
-                if existing_candidate.data:
-
-                    error = (
-                        "This candidate already has an online interview "
-                        "scheduled for the selected date."
-                    )
-
-                else:
+                try:
 
                     supabase.table(
                         "online_interviews"
@@ -1624,35 +1972,106 @@ def online_interview():
                         "meeting_link": meeting_link
                     }).execute()
 
+                    # -------------------------------------
+                    # UPDATE CANDIDATE STATUS
+                    # -------------------------------------
+
                     supabase.table(
                         "candidates"
                     ).update({
                         "status": "Online Scheduled"
                     }).eq(
-                        "id", candidate_id
+                        "id",
+                        candidate_id
                     ).execute()
 
                     message = (
-                        f"Online interview scheduled successfully for "
+                        f"Online interview scheduled "
+                        f"successfully for "
                         f"{candidate['name']}."
                     )
 
-                    candidates = get_all_candidates()
-                    online_interviews = get_online_interviews()
+                    # Refresh data after scheduling
 
-    scheduled_ids = {
-        row["candidate_id"]
-        for row in online_interviews
-    }
+                    candidates = get_all_candidates()
+
+                    online_interviews = (
+                        get_online_interviews()
+                    )
+
+                    scheduled_ids = {
+                        str(row["candidate_id"])
+                        for row in online_interviews
+                        if row.get("candidate_id")
+                    }
+
+                    online_by_candidate = {}
+
+                    for row in online_interviews:
+
+                        cid = str(
+                            row.get(
+                                "candidate_id",
+                                ""
+                            )
+                        )
+
+                        if cid:
+                            online_by_candidate[cid] = row
+
+                    available_online_ids = {
+                        str(candidate["id"])
+                        for candidate in candidates
+                        if str(candidate["id"])
+                        not in offline_scheduled_ids
+                        and str(candidate["id"])
+                        not in scheduled_ids
+                    }
+
+                    remaining_online_candidates = len(
+                        available_online_ids
+                    )
+
+                except Exception as exc:
+
+                    print(
+                        f"Online interview scheduling failed: {exc}"
+                    )
+
+                    error = (
+                        "Unable to schedule the online "
+                        "interview. Please try again."
+                    )
+
+    # -----------------------------------------------------
+    # RENDER ONLINE INTERVIEW PAGE
+    # -----------------------------------------------------
 
     return render_template(
         "online_interview.html",
+
         candidates=candidates,
+
         online_interviews=online_interviews,
+
         scheduled_ids=scheduled_ids,
+
+        available_online_ids=available_online_ids,
+
+        offline_scheduled_ids=offline_scheduled_ids,
+
+        online_by_candidate=online_by_candidate,
+
+        remaining_online_candidates=(
+            remaining_online_candidates
+        ),
+
         interviewers=ONLINE_INTERVIEWERS,
+
         departments=ONLINE_DEPARTMENTS,
+
         message=message,
+
         error=error
     )
 

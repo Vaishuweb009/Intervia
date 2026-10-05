@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Online Interview Details - Intervia</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(
+                135deg,
+                #eef8ff,
+                #f5f3ff,
+                #fdf8ee
+            );
+            color: #263238;
+            min-height: 100vh;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+
+        .header {
+            width: 100%;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(100, 120, 150, 0.12);
+        }
+
+        .brand {
+            font-size: 25px;
+            font-weight: 700;
+            color: #315d82;
+            letter-spacing: 0.5px;
+        }
+
+        .header-label {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        /* MAIN */
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 55px auto;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .title-section h1 {
+            font-size: 34px;
+            color: #294c68;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* CONFIRMATION */
+
+        .confirmation {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(80, 110, 140, 0.12);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(60, 80, 100, 0.08);
+        }
+
+        .confirmation-icon {
+            width: 55px;
+            height: 55px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e8f5e9;
+            color: #3d8b57;
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .confirmation h2 {
+            color: #315d82;
+            font-size: 22px;
+            margin-bottom: 7px;
+        }
+
+        .confirmation p {
+            color: #687580;
+            font-size: 14px;
+        }
+
+        /* CANDIDATE CARD */
+
+        .candidate-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(60, 80, 100, 0.08);
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #315d82;
+            margin-bottom: 20px;
+        }
+
+        .candidate-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .info-box {
+            background: #f7fbff;
+            border: 1px solid #e2edf5;
+            border-radius: 13px;
+            padding: 16px;
+        }
+
+        .label {
+            display: block;
+            font-size: 12px;
+            color: #82909c;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .value {
+            font-size: 16px;
+            color: #30495d;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        /* INTERVIEW DETAILS */
+
+        .details-card {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(60, 80, 100, 0.08);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .detail-box {
+            padding: 20px;
+            border-radius: 15px;
+            background: linear-gradient(
+                135deg,
+                #f5fbff,
+                #faf9ff
+            );
+            border: 1px solid #e4edf5;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: #7b8794;
+            margin-bottom: 8px;
+        }
+
+        .detail-value {
+            font-size: 18px;
+            font-weight: 650;
+            color: #294c68;
+        }
+
+        /* ONLINE BADGE */
+
+        .online-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #edf8f0;
+            color: #3f7f50;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #4c9a61;
+            border-radius: 50%;
+        }
+
+        /* NOTE */
+
+        .note {
+            background: #fff9e9;
+            border-left: 4px solid #e3bd63;
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-top: 20px;
+            color: #665a3b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* BUTTON */
+
+        .action-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .continue-button {
+            display: inline-block;
+            text-decoration: none;
+            background: #4f789d;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.25s ease;
+            box-shadow: 0 7px 18px rgba(79, 120, 157, 0.2);
+        }
+
+        .continue-button:hover {
+            background: #3f6688;
+            transform: translateY(-2px);
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 18px;
+            color: #667788;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back:hover {
+            color: #315d82;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            text-align: center;
+            color: #8a969f;
+            font-size: 13px;
+            padding: 10px 0 35px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 650px) {
+
+            .header {
+                padding: 18px 5%;
+            }
+
+            .brand {
+                font-size: 22px;
+            }
+
+            .header-label {
+                display: none;
+            }
+
+            .container {
+                width: 92%;
+                margin: 35px auto;
+            }
+
+            .title-section h1 {
+                font-size: 28px;
+            }
+
+            .candidate-grid,
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .candidate-card,
+            .details-card {
+                padding: 22px;
+            }
+
+            .continue-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="brand">
+            Intervia
+        </div>
+
+        <div class="header-label">
+            Interview Time Allocation System
+        </div>
+
+    </header>
+
+
+    <!-- MAIN -->
+
+    <main class="container">
+
+        <!-- TITLE -->
+
+        <section class="title-section">
+
+            <h1>
+                Online Interview Details
+            </h1>
+
+            <p class="subtitle">
+                Your online interview has been scheduled successfully.
+                Please review the details below before proceeding.
+            </p>
+
+        </section>
+
+
+        <!-- CONFIRMATION -->
+
+        <section class="confirmation">
+
+            <div class="confirmation-icon">
+                ✓
+            </div>
+
+            <h2>
+                Interview Scheduled
+            </h2>
+
+            <p>
+                Your interview details have been verified and allocated by the administrator.
+            </p>
+
+        </section>
+
+
+        <!-- CANDIDATE INFORMATION -->
+
+        <section class="candidate-card">
+
+            <h2 class="section-title">
+                Candidate Information
+            </h2>
+
+            <div class="candidate-grid">
+
+                <div class="info-box">
+
+                    <span class="label">
+                        Candidate Name
+                    </span>
+
+                    <span class="value">
+                        {{ candidate.name }}
+                    </span>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <span class="label">
+                        Candidate ID
+                    </span>
+
+                    <span class="value">
+                        {{ candidate.id }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- INTERVIEW DETAILS -->
+
+        <section class="details-card">
+
+            <div class="online-badge">
+
+                <span class="online-dot"></span>
+
+                Online Interview
+
+            </div>
+
+
+            <h2 class="section-title">
+                Interview Details
+            </h2>
+
+
+            <div class="details-grid">
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Interview Date
+                    </div>
+
+                    <div class="detail-value">
+                        {{ online_interview.interview_date }}
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Interview Time
+                    </div>
+
+                    <div class="detail-value">
+
+                        {{ online_interview.start_time }}
+                        -
+                        {{ online_interview.end_time }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Department
+                    </div>
+
+                    <div class="detail-value">
+                        {{ online_interview.department }}
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Interviewer
+                    </div>
+
+                    <div class="detail-value">
+                        {{ online_interview.interviewer }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="note">
+
+                <strong>Important:</strong>
+
+                Please make sure you are available during the assigned
+                interview time and have a stable internet connection.
+                The meeting link and joining instructions will be provided
+                on the next page.
+
+            </div>
+
+        </section>
+
+
+        <!-- ACTION -->
+
+        <div class="action-section">
+
+            <a
+                href="{{ url_for(
+                    'instructions',
+                    candidate_id=candidate.id
+                ) }}"
+                class="continue-button"
+            >
+                Continue to Online Interview Instructions →
+            </a>
+
+            <br>
+
+            <a
+                href="{{ url_for('candidate') }}"
+                class="back"
+            >
+                ← Back to Candidate Verification
+            </a>
+
+        </div>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+
+        Intervia — Interview Time Allocation System
+
+    </footer>
+
+</div>
+
+</body>
+</html>

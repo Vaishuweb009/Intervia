@@ -71,6 +71,29 @@
         .summary-card h3 { font-size: 14px; color: #69808d; margin-bottom: 10px; }
         .summary-card .number { font-size: 29px; font-weight: bold; color: #16779e; }
 
+        .clickable-card {
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .clickable-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(45,80,100,.10);
+        }
+
+        .status-note {
+            margin-top: 10px;
+            color: #71828d;
+            font-size: 13px;
+        }
+
+        .candidate-status-details {
+            display: block;
+            margin-top: 4px;
+            color: #6f828c;
+            font-size: 12px;
+        }
+
         .notice {
             padding: 13px 16px;
             border-radius: 10px;
@@ -184,16 +207,6 @@
             .online-item { grid-template-columns: 1fr; }
             .top { flex-direction: column; align-items: flex-start; }
         }
-        .clickable-card {
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.clickable-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-} 
-
     </style>
 </head>
 
@@ -217,21 +230,20 @@
         </a>
     </div>
 
-    <div class="summary-card clickable-card"
-     onclick="scrollToSection('candidate-list')">
-    <h3>Total Candidates</h3>
-    <div class="number">{{ candidates|length }}</div>
-</div>
+    <section class="summary">
+        <div class="summary-card clickable-card" onclick="scrollToSection('candidate-list')">
+            <h3>Total Candidates</h3>
+            <div class="number">{{ candidates|length }}</div>
+        </div>
 
-        <div class="summary-card clickable-card"
-     onclick="scrollToSection('scheduled-interviews')">
-    <h3>Scheduled Interviews</h3>
-    <div class="number">{{ online_interviews|length }}</div>
-</div>
+        <div class="summary-card clickable-card" onclick="scrollToSection('scheduled-interviews')">
+            <h3>Scheduled Interviews</h3>
+            <div class="number">{{ online_interviews|length }}</div>
+        </div>
 
         <div class="summary-card">
             <h3>Interviews Remaining</h3>
-            <div class="number">{{ candidates|length - scheduled_ids|length }}</div>
+            <div class="number">{{ remaining_online_candidates }}</div>
         </div>
     </section>
 
@@ -243,8 +255,42 @@
         <div class="notice error">{{ error }}</div>
     {% endif %}
 
+    <section class="card" id="add-candidate">
+        <h2>Add New Candidate</h2>
+
+        <form method="POST" action="{{ url_for('add_candidate') }}">
+            <input type="hidden" name="return_to" value="online">
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Candidate Name</label>
+                    <input
+                        type="text"
+                        name="candidate_name"
+                        placeholder="Enter candidate name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Candidate Email</label>
+                    <input
+                        type="email"
+                        name="candidate_email"
+                        placeholder="Enter candidate email"
+                        required
+                    >
+                </div>
+            </div>
+
+            <button type="submit" class="schedule-button">
+                + Add Candidate
+            </button>
+        </form>
+    </section>
+
     <section class="card">
-    <h2>Schedule Online Interviews</h2>
+        <h2>Schedule Online Interview</h2>
 
         <form method="POST">
             <div class="form-grid">
@@ -254,7 +300,7 @@
                     <select name="candidate_id" required>
                         <option value="">Select Candidate</option>
                         {% for candidate in candidates %}
-                            {% if candidate.id not in scheduled_ids %}
+                            {% if candidate.id in available_online_ids %}
                                 <option value="{{ candidate.id }}">
                                     {{ candidate.id }} - {{ candidate.name }}
                                 </option>
@@ -306,7 +352,7 @@
                     <label>Meeting Link</label>
                     <input
                         type="text"
-                        value="https://meet.google.com/abc-defg-hij"
+                        value="Google Meet - Default Link"
                         readonly
                     >
                 </div>
@@ -321,6 +367,7 @@
 
     <section class="card" id="candidate-list">
         <h2>Candidate List</h2>
+        <div class="status-note">Offline Scheduled candidates are already allocated offline and are not available for online scheduling.</div>
 
         {% if candidates %}
         <table class="candidate-table">
@@ -330,19 +377,37 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Status</th>
+                    <th>Online Interview</th>
                 </tr>
             </thead>
             <tbody>
                 {% for candidate in candidates %}
+                {% set online = online_by_candidate.get(candidate.id) %}
                 <tr>
                     <td>{{ candidate.id }}</td>
                     <td>{{ candidate.name }}</td>
                     <td>{{ candidate.email }}</td>
                     <td>
-                        {% if candidate.id in scheduled_ids %}
+                        {% if candidate.id in offline_scheduled_ids and candidate.id in scheduled_ids %}
+                            <span class="badge scheduled">Offline + Online</span>
+                        {% elif candidate.id in offline_scheduled_ids %}
+                            <span class="badge scheduled">Offline Scheduled</span>
+                        {% elif candidate.id in scheduled_ids %}
                             <span class="badge scheduled">Online Scheduled</span>
                         {% else %}
                             <span class="badge pending">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if online %}
+                            <span class="candidate-status-details">
+                                {{ online.department }} · {{ online.interviewer }}<br>
+                                {{ online.interview_date }} · {{ online.start_time }} - {{ online.end_time }}
+                            </span>
+                        {% elif candidate.id in offline_scheduled_ids %}
+                            <span class="candidate-status-details">Not Available — Offline Scheduled</span>
+                        {% else %}
+                            <span class="candidate-status-details">Not Scheduled</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -389,7 +454,6 @@
 <script>
     function scrollToSection(sectionId) {
         const section = document.getElementById(sectionId);
-
         if (section) {
             section.scrollIntoView({
                 behavior: "smooth",

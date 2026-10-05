@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Online Interview Instructions | Intervia</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7ff, #eaf0ff);
+            color: #20243a;
+            padding: 35px 20px 50px;
+        }
+
+        .circle {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0.35;
+            z-index: 0;
+        }
+
+        .circle.one {
+            width: 280px;
+            height: 280px;
+            background: #d6ddff;
+            top: -100px;
+            left: -90px;
+        }
+
+        .circle.two {
+            width: 350px;
+            height: 350px;
+            background: #e5ddff;
+            right: -130px;
+            bottom: -130px;
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand {
+            color: #5967b3;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 38px;
+            color: #20243a;
+            margin-bottom: 9px;
+        }
+
+        .subtitle {
+            color: #70758a;
+            font-size: 15px;
+        }
+
+        /* Candidate information */
+
+        .candidate-info {
+            background: white;
+            border-radius: 18px;
+            padding: 20px 25px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(50, 60, 100, 0.08);
+            margin-bottom: 22px;
+        }
+
+        .info-item {
+            padding: 5px 12px;
+            border-right: 1px solid #eceef7;
+        }
+
+        .info-item:nth-child(2) {
+            border-right: none;
+        }
+
+        .info-label {
+            display: block;
+            color: #8b90a3;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #30354d;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Main card */
+
+        .instruction-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 22px;
+            padding: 28px;
+            box-shadow: 0 12px 35px rgba(50, 60, 100, 0.09);
+        }
+
+        .card-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .heading-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #eef0ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .card-heading h2 {
+            font-size: 22px;
+            color: #30354d;
+        }
+
+        /* Meeting box */
+
+        .meeting-box {
+            background: linear-gradient(
+                135deg,
+                #5967b3,
+                #707dc7
+            );
+            color: white;
+            border-radius: 17px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .meeting-box h3 {
+            font-size: 17px;
+            margin-bottom: 7px;
+        }
+
+        .meeting-box p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .meeting-link {
+            display: block;
+            background: white;
+            color: #5967b3;
+            padding: 13px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            word-break: break-all;
+        }
+
+        .meeting-link:hover {
+            background: #f4f5ff;
+        }
+
+        /* Information grid */
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .detail-box {
+            background: #fafbff;
+            border: 1px solid #eceef7;
+            border-radius: 13px;
+            padding: 17px;
+        }
+
+        .detail-label {
+            color: #8b90a3;
+            font-size: 11px;
+            margin-bottom: 7px;
+            display: block;
+        }
+
+        .detail-value {
+            color: #30354d;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* Instructions */
+
+        .section-title {
+            color: #30354d;
+            font-size: 17px;
+            margin-bottom: 14px;
+        }
+
+        .instruction-list {
+            display: grid;
+            gap: 11px;
+            margin-bottom: 25px;
+        }
+
+        .instruction-item {
+            background: #fafbff;
+            border: 1px solid #eceef7;
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .instruction-number {
+            min-width: 27px;
+            height: 27px;
+            border-radius: 50%;
+            background: #eef0ff;
+            color: #5967b3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .instruction-item p {
+            color: #60667b;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .instruction-item strong {
+            color: #30354d;
+        }
+
+        /* Reminder */
+
+        .reminder {
+            background: #fffdfa;
+            border: 1px solid #f3ead5;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 5px;
+        }
+
+        .reminder h3 {
+            color: #8a7444;
+            font-size: 15px;
+            margin-bottom: 7px;
+        }
+
+        .reminder p {
+            color: #77705f;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* Buttons */
+
+        .buttons {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .home-button {
+            display: inline-block;
+            padding: 13px 25px;
+            background: #5967b3;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .home-button:hover {
+            background: #4d599f;
+        }
+
+        .back {
+            display: block;
+            margin-top: 14px;
+            color: #5967b3;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 700px) {
+
+            .candidate-info {
+                grid-template-columns: 1fr;
+            }
+
+            .info-item {
+                border-right: none;
+                border-bottom: 1px solid #eceef7;
+                padding-bottom: 12px;
+            }
+
+            .info-item:last-child {
+                border-bottom: none;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+        }
+
+        @media (max-width: 450px) {
+
+            body {
+                padding: 25px 12px 40px;
+            }
+
+            .instruction-card {
+                padding: 20px 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="circle one"></div>
+<div class="circle two"></div>
+
+
+<main class="page">
+
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="brand">
+            Intervia
+        </div>
+
+        <h1>
+            Online Interview Instructions
+        </h1>
+
+        <p class="subtitle">
+            Please follow these instructions before joining your online interview.
+        </p>
+
+    </header>
+
+
+    <!-- CANDIDATE INFORMATION -->
+
+    <section class="candidate-info">
+
+        <div class="info-item">
+
+            <span class="info-label">
+                Candidate Name
+            </span>
+
+            <span class="info-value">
+                {{ candidate.name }}
+            </span>
+
+        </div>
+
+
+        <div class="info-item">
+
+            <span class="info-label">
+                Candidate ID
+            </span>
+
+            <span class="info-value">
+                {{ candidate.id }}
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- MAIN INSTRUCTIONS -->
+
+    <section class="instruction-card">
+
+
+        <div class="card-heading">
+
+            <div class="heading-icon">
+                💻
+            </div>
+
+            <h2>
+                Your Online Interview
+            </h2>
+
+        </div>
+
+
+        <!-- MEETING LINK -->
+
+        <div class="meeting-box">
+
+            <h3>
+                🔗 Join Your Interview
+            </h3>
+
+            <p>
+                Use the meeting link below to join your scheduled interview.
+            </p>
+
+            <a
+                href="{{ online_interview.meeting_link }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="meeting-link"
+            >
+                {{ online_interview.meeting_link }}
+            </a>
+
+        </div>
+
+
+        <!-- JOINING INSTRUCTIONS -->
+
+        <h3 class="section-title">
+            Joining Instructions
+        </h3>
+
+
+        <div class="instruction-list">
+
+
+            <div class="instruction-item">
+
+                <div class="instruction-number">
+                    1
+                </div>
+
+                <p>
+                    Join the meeting <strong>10 minutes before</strong>
+                    your scheduled interview time.
+                </p>
+
+            </div>
+
+
+            <div class="instruction-item">
+
+                <div class="instruction-number">
+                    2
+                </div>
+
+                <p>
+                    Make sure your <strong>internet connection</strong>
+                    is stable before joining the interview.
+                </p>
+
+            </div>
+
+
+            <div class="instruction-item">
+
+                <div class="instruction-number">
+                    3
+                </div>
+
+                <p>
+                    Check your <strong>camera and microphone</strong>
+                    before joining the meeting.
+                </p>
+
+            </div>
+
+
+            <div class="instruction-item">
+
+                <div class="instruction-number">
+                    4
+                </div>
+
+                <p>
+                    Sit in a <strong>quiet and well-lit place</strong>
+                    and avoid unnecessary background noise.
+                </p>
+
+            </div>
+
+
+            <div class="instruction-item">
+
+                <div class="instruction-number">
+                    5
+                </div>
+
+                <p>
+                    Keep your <strong>resume, identification proof and
+                    required documents</strong> ready before the interview.
+                </p>
+
+            </div>
+
+
+            <div class="instruction-item">
+
+                <div class="instruction-number">
+                    6
+                </div>
+
+                <p>
+                    Use your <strong>full name</strong> when joining the
+                    online meeting so the interviewer can identify you easily.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- REMINDER -->
+
+        <div class="reminder">
+
+            <h3>
+                ⚠ Important Reminder
+            </h3>
+
+            <p>
+                Please do not share your interview meeting link with anyone.
+                If you face any technical issue while joining, contact the
+                organization or administrator immediately.
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- BUTTONS -->
+
+    <div class="buttons">
+
+        <a
+            href="{{ url_for('home') }}"
+            class="home-button"
+        >
+            Return to Home
+        </a>
+
+
+        <a
+            href="{{ url_for('candidate') }}"
+            class="back"
+        >
+            ← Back to Candidate Verification
+        </a>
+
+    </div>
+
+
+</main>
+
+</body>
+
+</html>
